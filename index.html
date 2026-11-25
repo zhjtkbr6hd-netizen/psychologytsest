@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: Твой скрытый архетип личности</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1f2937;
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 { font-size: 22px; margin-bottom: 10px; color: #111827; }
+        p { font-size: 15px; color: #4b5563; line-height: 1.5; }
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1f2937;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            background: #e5e7eb;
+        }
+        .option-btn:active {
+            background: #e0e7ff;
+            border-color: #6366f1;
+        }
+        .progress {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .result-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #4f46e5;
+            margin: 15px 0 10px;
+        }
+        .ad-slot {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fef3c7;
+            border: 1px dashed #f59e0b;
+            border-radius: 14px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        .ad-slot a {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 16px;
+            background: #f59e0b;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .restart-btn {
+            margin-top: 15px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card" id="app">
+    <div id="quiz-screen">
+        <div class="progress" id="progress">Вопрос 1 из 8</div>
+        <h1 id="question">Загрузка...</h1>
+        <div id="options"></div>
+    </div>
+
+    <div id="result-screen" style="display: none;">
+        <div class="progress">Твой результат готов!</div>
+        <div class="result-title" id="res-title"></div>
+        <p id="res-desc"></p>
+
+        <!-- СЮДА ВСТАВЛЯЕТСЯ РЕКЛАМА ИЛИ ЛЮБАЯ ПАРТНЕРСКАЯ ССЫЛКА -->
+        <div class="ad-slot" id="ad-container">
+            🎁 <b>Бонус для твоего типа личности:</b><br>
+            Забери бесплатную подписку на кино и музыку на 60 дней по ссылке ниже!
+            <br>
+            <a href="https://example.com" target="_blank">Забрать подарок →</a>
+        </div>
+
+        <button class="restart-btn" onclick="restartQuiz()">Пройти еще раз</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            q: "Как ты обычно проводишь свободный вечер?",
+            options: [
+                { text: "Залипаю в сериалы или соцсети в одиночестве", type: "A" },
+                { text: "Иду гулять или тусить с друзьями", type: "B" },
+                { text: "Изучаю что-то новое или строю планы", type: "C" }
+            ]
+        },
+        {
+            q: "Что тебя бесит больше всего?",
+            options: [
+                { text: "Когда нарушают мои личные границы", type: "A" },
+                { text: "Скука и однообразие", type: "B" },
+                { text: "Глупость и непунктуальность людей", type: "C" }
+            ]
+        },
+        {
+            q: "Твоя главная суперсила в компании?",
+            options: [
+                { text: "Умею выслушать и дать точный совет", type: "A" },
+                { text: "Создаю движ и поднимаю всем настроение", type: "B" },
+                { text: "Решаю любые проблемы с холодной головой", type: "C" }
+            ]
+        },
+        {
+            q: "Как ты принимаешь сложные решения?",
+            options: [
+                { text: "Доверяю своей интуиции и внутренним ощущениям", type: "A" },
+                { text: "Действую спонтанно — на месте разберемся", type: "B" },
+                { text: "Взвешиваю все плюсы, минусы и риски", type: "C" }
+            ]
+        },
+        {
+            q: "Твой идеальный отпуск — это:",
+            options: [
+                { text: "Уединенный домик в лесу или у моря без лишних глаз", type: "A" },
+                { text: "Насыщенный евротур, фестивали и новые знакомства", type: "B" },
+                { text: "Четко спланированный маршрут по главным достопримечательностям", type: "C" }
+            ]
+        },
+        {
+            q: "Как ты ведешь себя в конфликтной ситуации?",
+            options: [
+                { text: "Стараюсь отойти в сторону и наблюдать за развитием событий", type: "A" },
+                { text: "Сразу высказываю всё, что думаю, на эмоциях", type: "B" },
+                { text: "Спокойно и аргументированно отстаиваю свою позицию", type: "C" }
+            ]
+        },
+        {
+            q: "Что для тебя важнее всего в работе или учебе?",
+            options: [
+                { text: "Комфортная атмосфера и отсутствие жесткого контроля", type: "A" },
+                { text: "Яркие задачи, общение с командой и признание", type: "B" },
+                { text: "Понятный карьерный рост, система и высокий доход", type: "C" }
+            ]
+        },
+        {
+            q: "Какой комплимент тебе приятнее всего услышать?",
+            options: [
+                { text: "«Ты видишь людей насквозь, с тобой очень спокойно»", type: "A" },
+                { text: "«С тобой никогда не бывает скучно, ты заряжаешь энергией!»", type: "B" },
+                { text: "«На тебя всегда можно положиться, ты профи в своем деле»", type: "C" }
+            ]
+        }
+    ];
+
+    const results = {
+        A: {
+            title: "🔮 Тайный Стратег",
+            desc: "Ты глубокий наблюдатель с отличной интуицией. Ты ценишь личное пространство, не любишь пустую суету и всегда замечаешь детали, которые упускают другие."
+        },
+        B: {
+            title: "🔥 Генератор Движа",
+            desc: "Ты душа любой компании и источник бесконечной энергии. Ты легко адаптируешься к переменам, обожаешь новые эмоции и умеешь вдохновлять окружающих."
+        },
+        C: {
+            title: "🧠 Архитектор Реальности",
+            desc: "Твоя сила — в логике, порядке и железной выдержке. Ты умеешь ставить амбициозные цели, просчитывать шаги наперед и доводить начатое до идеала."
+        }
+    };
+
+    let currentQuestion = 0;
+    let scores = { A: 0, B: 0, C: 0 };
+
+    const progressEl = document.getElementById("progress");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    function loadQuestion() {
+        const qData = questions[currentQuestion];
+        progressEl.textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+        questionEl.textContent = qData.q;
+        optionsEl.innerHTML = "";
+
+        qData.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.textContent = opt.text;
+            btn.onclick = () => selectOption(opt.type);
+            optionsEl.appendChild(btn);
+        });
+    }
+
+    function selectOption(type) {
+        scores[type]++;
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        quizScreen.style.display = "none";
+        resultScreen.style.display = "block";
+
+        let maxType = "A";
+        if (scores.B > scores[maxType]) maxType = "B";
+        if (scores.C > scores[maxType]) maxType = "C";
+
+        document.getElementById("res-title").textContent = results[maxType].title;
+        document.getElementById("res-desc").textContent = results[maxType].desc;
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        scores = { A: 0, B: 0, C: 0 };
+        resultScreen.style.display = "none";
+        quizScreen.style.display = "block";
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
